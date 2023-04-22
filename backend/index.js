@@ -15,6 +15,7 @@ app.use(express.urlencoded({ extended: false }));
 // Routes
 app.use("api/user", userRoutes);
 
+
 app.get("/", (req, res) => {
   res.status(200).json({ status: 1, message: "Blog Api" });
 });
