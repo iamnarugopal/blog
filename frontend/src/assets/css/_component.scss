@@ -1,0 +1,6 @@
+.btn {
+  @apply border border-transparent border-solid px-4 py-2 uppercase tracking-widest text-sm;
+  &.btn-warning {
+    @apply text-white border-white;
+  }
+}
