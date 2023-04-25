@@ -8,13 +8,13 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <div className="">
             <div className="text-white text-3xl font-bold uppercase">
-              My Blog
+              <Link to="/">My Blog</Link>
             </div>
           </div>
           <div>
             <div className="flex gap-3">
-              <Link className="btn btn-warning" to="/login">Login</Link>
-              <Link className="btn btn-warning" to="/login">Signup</Link>
+              <Link className="btn btn-outline-primary" to="/login">Login</Link>
+              <Link className="btn btn-primary" to="/signup">Signup</Link>
             </div>
           </div>
         </div>

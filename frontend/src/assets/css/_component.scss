@@ -1,6 +1,34 @@
 .btn {
-  @apply border border-transparent border-solid px-4 py-2 uppercase tracking-widest text-sm;
-  &.btn-warning {
-    @apply text-white border-white;
+  @apply px-4 py-2 uppercase tracking-widest text-sm font-semibold transition-all cursor-pointer;
+  &:active{
+    @apply scale-95 transition-all;
   }
+  &.btn-primary {
+    @apply border-2 border-solid border-sky-600 bg-sky-600 text-white;
+    &:hover {
+      @apply bg-sky-700 border-sky-700  transition-all;
+    }
+  }
+  &.btn-outline-primary {
+    @apply border-2 border-solid border-sky-600 text-sky-600;
+    &:hover {
+      @apply bg-sky-600 text-white transition-all;
+    }
+  }
+}
+.form-label {
+  @apply text-sm mb-2 block;
+}
+.form-control {
+  @apply w-full h-10 bg-transparent outline-0 border-2 border-solid border-slate-700 px-4 transition-all;
+  &:focus{
+    @apply border-sky-600 transition-all;
+  }
+}
+.container{
+  @apply px-4;
+}
+
+.form-error{
+  @apply text-red-500 mt-1; 
 }
