@@ -26,10 +26,10 @@ app.use((err, _req, res, next) => {
   res.status(500).send("Uh oh! An unexpected error occured.");
 });
 
-app.get('/', (req, res) => {
-  const token = req.cookies.token;
-  res.send(`The value of myCookie is ${token}`);
-});
+// app.get('/', (req, res) => {
+//   const token = req.cookies.token;
+//   res.send(`The value of myCookie is ${token}`);
+// });
 
 
 // start the Express server

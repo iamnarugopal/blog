@@ -57,6 +57,12 @@ module.exports.login = async (req, res) => {
       { id: userExist._id.valueOf() },
       process.env.JWT_SECRET
     );
+
+    const sendData = {
+      name: userExist.name,
+      email: userExist.email,
+    };
+
     res
       .status(200)
       .cookie("token", token, {
@@ -65,9 +71,9 @@ module.exports.login = async (req, res) => {
         secure: true,
         maxAge: 600000,
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: "none",
       })
-      .json({ data: userExist, message: "Login successfully", status: 1 });
+      .json({ data: sendData, message: "Login successfully", status: 1 });
   } catch (e) {
     res.status(500).json({ message: e.message, status: 0 });
   }

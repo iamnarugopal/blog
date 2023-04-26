@@ -3,35 +3,33 @@ import { useForm } from "react-hook-form";
 import Api from "../../config/Api";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import Cookies from 'js-cookie';
-
+import { useDispatch } from "react-redux";
+import { setUser } from "../../store/authenticationSlice";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm();
   const navigate = useNavigate();
 
-  console.log(Cookies.get('token'));
-
   const onSubmit = async (body) => {
     try {
-      const res = await Api.post("login", body);
-      console.log(res);
-      // if (data.status === 1) {
-      //   toast.success("Login successfully!", {
-      //     position: toast.POSITION.BOTTOM_RIGHT,
-      //   });
-      //   reset();
-      //   navigate("/");
-      // }else{
-      //   toast.error(data.message, {
-      //     position: toast.POSITION.BOTTOM_RIGHT,
-      //   });
-      // }
+      const { data } = await Api.post("login", body);
+      // console.log(data);
+      if (data.status === 1) {
+        toast.success("Login successfully!", {
+          position: toast.POSITION.BOTTOM_RIGHT,
+        });
+        dispatch(setUser(data.data));
+        navigate("/");
+      } else {
+        toast.error(data.message, {
+          position: toast.POSITION.BOTTOM_RIGHT,
+        });
+      }
     } catch (err) {
       toast.error(err.message, {
         position: toast.POSITION.BOTTOM_RIGHT,
