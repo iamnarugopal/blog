@@ -1,5 +1,5 @@
 .btn {
-  @apply px-4 py-2 uppercase tracking-widest text-sm font-semibold transition-all cursor-pointer;
+  @apply px-4 py-2 block uppercase tracking-widest text-sm font-semibold transition-all cursor-pointer;
   &:active{
     @apply scale-95 transition-all;
   }

@@ -78,3 +78,38 @@ module.exports.login = async (req, res) => {
     res.status(500).json({ message: e.message, status: 0 });
   }
 };
+
+module.exports.changepassword = async (req, res) => {
+  try {
+    const body = req.body;
+
+    if (!body.current_password || !body.confirm_password) {
+      res.status(200).json({
+        message: "Please enter current & confirm password",
+        status: 0,
+      });
+      return;
+    }
+    const userExist = await User.findOne({ _id: req.id });
+    if (!userExist) {
+      res.status(200).json({ message: "User not exist", status: 0 });
+      return;
+    }
+    const comparePassword = await bcrypt.compare(
+      body.current_password,
+      userExist.password
+    );
+    if (!comparePassword) {
+      res
+        .status(200)
+        .json({ message: "Current password not matching", status: 0 });
+      return;
+    }
+    const hashPassword = await bcrypt.hash(body.confirm_password, 10);
+    userExist.password = hashPassword;
+    userExist.save();
+    res.status(200).json({ message: "Password changed successfully", status: 1 });
+  } catch (e) {
+    res.status(500).json({ message: e.message, status: 0 });
+  }
+};

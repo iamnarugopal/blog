@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../store/authenticationSlice";
 
-const Login = () => {
+const ChnagePassword = () => {
   const dispatch = useDispatch();
   const {
     register,
@@ -17,25 +17,29 @@ const Login = () => {
 
   const onSubmit = async (body) => {
     try {
-      const { data } = await Api.post("login", body);
-      // console.log(data);
-      if (data.status === 1) {
-        toast.success("Login successfully", {
+      if (body.confirm_password !== body.new_password) {
+        toast.error("New password & confirm password not matching", {
           position: toast.POSITION.BOTTOM_RIGHT,
         });
-        dispatch(setUser(data.data));
-        navigate("/");
+        return;
+      }
+      // console.log(body);
+      const { data } = await Api.patch("change-password", body);
+      // console.log(data);
+      if (data.status === 1) {
+        toast.success("Password changed successfully", {
+          position: toast.POSITION.BOTTOM_RIGHT,
+        });
       } else {
         toast.error(data.message, {
           position: toast.POSITION.BOTTOM_RIGHT,
         });
       }
     } catch (err) {
-      toast.error(err.message, {
-        position: toast.POSITION.BOTTOM_RIGHT,
-      });
+      console.log(err);
     }
   };
+
   return (
     <section className="py-10 lg:py-20">
       <div className="container mx-auto">
@@ -45,38 +49,55 @@ const Login = () => {
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex flex-col gap-5 lg:gap-8">
                   <div className="text-center">
-                    <h1 className="text-3xl">Login</h1>
+                    <h1 className="text-3xl">Change Password</h1>
                   </div>
                   <div>
-                    <label className="form-label">Email</label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      {...register("email", {
-                        required: true,
-                      })}
-                    />
-                    {errors.email && (
-                      <div className="form-error">Email is required</div>
-                    )}
-                  </div>
-                  <div>
-                    <label className="form-label">Password</label>
+                    <label className="form-label">Current Password</label>
                     <input
                       type="password"
                       className="form-control"
-                      {...register("password", {
+                      {...register("current_password", {
                         required: true,
                       })}
                     />
-                    {errors.password && (
-                      <div className="form-error">Password is required</div>
+                    {errors.current_password && (
+                      <div className="form-error">
+                        Current Password is required
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <label className="form-label">New Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      {...register("new_password", {
+                        required: true,
+                      })}
+                    />
+                    {errors.new_password && (
+                      <div className="form-error">New Password is required</div>
+                    )}
+                  </div>
+                  <div>
+                    <label className="form-label">Confirm Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      {...register("confirm_password", {
+                        required: true,
+                      })}
+                    />
+                    {errors.confirm_password && (
+                      <div className="form-error">
+                        Confirm Password is required
+                      </div>
                     )}
                   </div>
                   <div>
                     <input
                       type="submit"
-                      value="Login"
+                      value="Submit"
                       className="btn btn-primary w-full"
                     />
                   </div>
@@ -90,4 +111,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ChnagePassword;

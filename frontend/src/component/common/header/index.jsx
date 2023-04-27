@@ -1,14 +1,25 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { Link } from "react-router-dom";
+import { FiPower, FiKey, FiEdit2, FiEdit, FiList } from "react-icons/fi";
+import { useSelector, useDispatch } from "react-redux";
+import { removeUser } from "../../../store/authenticationSlice";
 
 const Header = () => {
+  const disppatch = useDispatch();
+  const user = useSelector((state) => state.authentication.user);
+  const isLogin = useSelector((state) => state.authentication.isLogin);
+
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
   }
 
+  const logout = () => {
+    disppatch(removeUser());
+  };
+
   return (
-    <header className="shrink-0 py-3">
+    <header className="shrink-0 py-5">
       <div className="container mx-auto">
         <div className="flex items-center justify-between">
           <div className="">
@@ -18,13 +29,11 @@ const Header = () => {
           </div>
           <div>
             <div className="flex gap-3">
-              <div>
+              {isLogin ? (
                 <Menu as="div" className="relative inline-block text-left">
-                  <div>
-                    <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                      Options
-                    </Menu.Button>
-                  </div>
+                  <Menu.Button className="bg-sky-600 text-white w-10 h-10 rounded-full">
+                    {user?.name?.charAt(0).toUpperCase()}
+                  </Menu.Button>
 
                   <Transition
                     as={Fragment}
@@ -35,130 +44,77 @@ const Header = () => {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-slate-600 rounded-md bg-slate-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <div className="py-1">
                         <Menu.Item>
                           {({ active }) => (
-                            <a
-                              href="#"
+                            <Link
+                              to="/add-blog"
                               className={classNames(
-                                active
-                                  ? "bg-gray-100 text-gray-900"
-                                  : "text-gray-700",
-                                "block px-4 py-2 text-sm"
+                                active ? "bg-sky-600" : "",
+                                "text-white flex items-center gap-2 px-4 py-2 text-sm"
                               )}
                             >
-                              Edit
-                            </a>
+                              <FiEdit /> Add Blog
+                            </Link>
                           )}
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <a
-                              href="#"
+                            <Link
+                              to="/my-blog"
                               className={classNames(
-                                active
-                                  ? "bg-gray-100 text-gray-900"
-                                  : "text-gray-700",
-                                "block px-4 py-2 text-sm"
+                                active ? "bg-sky-600" : "",
+                                "text-white flex items-center gap-2 px-4 py-2 text-sm"
                               )}
                             >
-                              Duplicate
-                            </a>
+                              <FiList /> My Blogs
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              to="/change-password"
+                              className={classNames(
+                                active ? "bg-sky-600" : "",
+                                "text-white flex items-center gap-2 px-4 py-2 text-sm"
+                              )}
+                            >
+                              <FiKey /> Change Password
+                            </Link>
                           )}
                         </Menu.Item>
                       </div>
                       <div className="py-1">
                         <Menu.Item>
                           {({ active }) => (
-                            <a
-                              href="#"
+                            <button
+                              type="button"
+                              onClick={logout}
                               className={classNames(
-                                active
-                                  ? "bg-gray-100 text-gray-900"
-                                  : "text-gray-700",
-                                "block px-4 py-2 text-sm"
+                                active ? "bg-sky-600" : "",
+                                "w-full text-white flex items-center gap-2 px-4 py-2 text-sm"
                               )}
                             >
-                              Archive
-                            </a>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active
-                                  ? "bg-gray-100 text-gray-900"
-                                  : "text-gray-700",
-                                "block px-4 py-2 text-sm"
-                              )}
-                            >
-                              Move
-                            </a>
-                          )}
-                        </Menu.Item>
-                      </div>
-                      <div className="py-1">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active
-                                  ? "bg-gray-100 text-gray-900"
-                                  : "text-gray-700",
-                                "block px-4 py-2 text-sm"
-                              )}
-                            >
-                              Share
-                            </a>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active
-                                  ? "bg-gray-100 text-gray-900"
-                                  : "text-gray-700",
-                                "block px-4 py-2 text-sm"
-                              )}
-                            >
-                              Add to favorites
-                            </a>
-                          )}
-                        </Menu.Item>
-                      </div>
-                      <div className="py-1">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active
-                                  ? "bg-gray-100 text-gray-900"
-                                  : "text-gray-700",
-                                "block px-4 py-2 text-sm"
-                              )}
-                            >
-                              Delete
-                            </a>
+                              <FiPower /> Logout
+                            </button>
                           )}
                         </Menu.Item>
                       </div>
                     </Menu.Items>
                   </Transition>
                 </Menu>
-              </div>
-              <Link className="btn btn-outline-primary" to="/login">
-                Login
-              </Link>
-              <Link className="btn btn-primary" to="/signup">
-                Signup
-              </Link>
+              ) : (
+                <>
+                  <Link className="btn btn-outline-primary" to="/login">
+                    Login
+                  </Link>
+                  <Link className="btn btn-primary" to="/signup">
+                    Signup
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

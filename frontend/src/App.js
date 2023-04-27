@@ -7,6 +7,12 @@ import Login from "./view/login";
 import Error from "./view/error";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Blog from "./view/blog";
+import BlogDetail from "./view/blog/BlogDetail";
+import ChangePassword from "./view/changepassword";
+import UserAuth from "./navigation/UserAuth";
+import AddBlog from "./view/addblog";
+import MyBlog from "./view/myblog";
 
 const App = () => {
   return (
@@ -17,8 +23,16 @@ const App = () => {
         <main className="grow">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogDetail />} />
+
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
+            <Route element={<UserAuth redirectPath="/" />}>
+              <Route path="/add-blog" element={<AddBlog />} />
+              <Route path="/my-blog" element={<MyBlog />} />
+              <Route path="/change-password" element={<ChangePassword />} />
+            </Route>
             <Route path="*" element={<Error />} />
           </Routes>
         </main>
