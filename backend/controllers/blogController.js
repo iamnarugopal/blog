@@ -1,6 +1,5 @@
 const Blog = require("../models/blogmodel");
 
-
 const getSlug = (string) => {
   return string
     .toString()
@@ -17,10 +16,10 @@ module.exports.getblog = async (req, res) => {
       "author",
       ["email", "name"]
     );
-    if (!blog.length) {
-      res.status(404).json({ message: "No blog created yet", status: 0 });
-      return;
-    }
+    // if (!blog.length) {
+    //   res.status(404).json({ message: "No blog created yet", status: 0 });
+    //   return;
+    // }
     res.status(200).json({ data: blog, message: "Success", status: 1 });
   } catch (e) {
     res.status(500).json({ message: e.message, status: 0 });
@@ -35,7 +34,9 @@ module.exports.getblogDetail = async (req, res) => {
       "name",
     ]);
     if (!blog) {
-      res.status(404).json({ message: "No blog found with this slug", status: 0 });
+      res
+        .status(404)
+        .json({ message: "No blog found with this slug", status: 0 });
       return;
     }
     res.status(200).json({ data: blog, message: "Success", status: 1 });
@@ -46,36 +47,37 @@ module.exports.getblogDetail = async (req, res) => {
 
 module.exports.addblog = async (req, res) => {
   try {
-    console.log(req.body);
-    // const { title, short_description, long_description } = req.body;
-    // const author = req.id;
+ 
+    const { title, short_description, long_description } = req.body;
+    const image = `${process.env.BLOG_IMAGE_URL}${req.file.filename}`;
+    const author = req.id;
+    if (title === "" || short_description === "" || long_description === "") {
+      res
+        .status(200)
+        .json({ message: "Please fill required fields", status: 0 });
+      return;
+    }
+    const slug = getSlug(title);
+    const slugExist = await Blog.findOne({ slug });
 
-    // if (title === "" || short_description === "" || long_description === "") {
-    //   res
-    //     .status(200)
-    //     .json({ message: "Please fill required fields", status: 0 });
-    //   return;
-    // }
-    // const slug = getSlug(title);
-    // const slugExist = await Blog.findOne({ slug });
-
-    // if (!!slugExist) {
-    //   res.status(409).json({ message: "Slug already exist", status: 0 });
-    //   return;
-    // }
-    // const result = new Blog({
-    //   title,
-    //   slug,
-    //   short_description,
-    //   long_description,
-    //   author,
-    // });
-    // result
-    //   .save()
-    //   .then(() =>
-    //     res.status(201).json({ message: "Blog saved successfully", status: 1 })
-    //   )
-    //   .catch((e) => res.status(200).json({ message: e.message, status: 0 }));
+    if (!!slugExist) {
+      res.status(409).json({ message: "Slug already exist", status: 0 });
+      return;
+    }
+    const result = new Blog({
+      title,
+      slug,
+      short_description,
+      long_description,
+      author,
+      image,
+    });
+    result
+      .save()
+      .then(() =>
+        res.status(201).json({ message: "Blog saved successfully", status: 1 })
+      )
+      .catch((e) => res.status(200).json({ message: e.message, status: 0 }));
   } catch (e) {
     res.status(500).json({ message: e.message, status: 0 });
   }

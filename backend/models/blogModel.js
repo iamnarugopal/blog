@@ -22,6 +22,10 @@ const blogSchema = new Schema(
       type: String,
       required: false,
     },
+    image: {
+      type: String,
+      required: false,
+    },
     author: { type: Schema.Types.ObjectId, ref: "user" },
   },
   {

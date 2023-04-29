@@ -1,45 +1,32 @@
-const multer = require('multer');
+const multer = require("multer");
 
-// Define storage for uploaded images
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'public/images');
+//Configuration for Multer
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images/blogs");
   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `blog-${Date.now()}.${ext}`);
+  },
 });
 
-// Define filter for image files
-const imageFilter = function (req, file, cb) {
-  // Accept images only
-  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-    req.fileValidationError = 'Only image files are allowed!';
-    return cb(new Error('Only image files are allowed!'), false);
+// Multer Filter
+const multerFilter = (req, file, cb) => {
+  if (
+    file.mimetype.split("/")[1] === "jpg" ||
+    file.mimetype.split("/")[1] === "png" ||
+    file.mimetype.split("/")[1] === "jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(new Error("Invalid image file"), false);
   }
-  cb(null, true);
 };
 
-// Set up multer middleware for image uploading
-const upload = multer({ storage: storage, fileFilter: imageFilter });
-
-// Middleware function for image uploading
-const uploadImage = function(req, res, next) {
-  upload.single('image')(req, res, function(err) {
-    if (err) {
-      // Handle Multer errors
-      if (err instanceof multer.MulterError) {
-        return res.status(400).json({ message: err.message });
-      }
-      // Handle validation errors
-      if (req.fileValidationError) {
-        return res.status(400).json({ message: req.fileValidationError });
-      }
-      // Handle other errors
-      return res.status(400).json({ message: 'Failed to upload image!' });
-    }
-    next();
-  });
-};
+const uploadImage = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
 
 module.exports = uploadImage;
