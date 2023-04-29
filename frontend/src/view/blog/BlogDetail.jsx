@@ -1,7 +1,31 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import Api from "../../config/Api";
+import dayjs from "dayjs";
 
 const BlogDetail = () => {
+  const { slug } = useParams();
+  const [blogDetail, setBlogDetail] = useState([]);
+  const getBlogDetail = async () => {
+    try {
+      const { data } = await Api(`/blog/${slug}`);
+      if (data.status === 1) {
+        setBlogDetail(data?.data);
+      } else {
+        toast.error(data.message, {
+          position: toast.POSITION.BOTTOM_RIGHT,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getBlogDetail();
+  }, []);
+
   return (
     <section className="py-10 xl:py-16 2xl:py-20">
       <div className="container mx-auto">
@@ -16,83 +40,26 @@ const BlogDetail = () => {
                 />
               </div>
               <div className="mb-10">
-                <h1 class="text-3xl font-semibold text-white mb-4">
-                  Boost your conversion rate
+                <h1 className="text-3xl font-semibold text-white mb-4">
+                  {blogDetail?.title}
                 </h1>
-                <div class="relative flex items-center gap-x-4 mb-10">
+                <div className="relative flex items-center gap-x-4 mb-10">
                   <div className="bg-sky-600 text-white w-10 h-10 rounded-full justify-center items-center flex">
-                    a
+                    {blogDetail?.author?.name?.charAt(0).toUpperCase()}
                   </div>
-                  <div class="text-sm leading-6">
-                    <p class="font-semibold text-slate-400">
-                      <Link to="/">Michael Foster</Link>
+                  <div className="text-sm leading-6">
+                    <p className="font-semibold text-slate-400">
+                      <Link to="/">{blogDetail?.author?.name}</Link>
                     </p>
-                    <p class="text-slate-600">
-                      <time dateTime="2020-03-16">Mar 16, 2020</time>
+                    <p className="text-slate-600">
+                      {dayjs(blogDetail?.createdAt).format(
+                        "DD MMM YYYY - HH:MM A"
+                      )}
                     </p>
                   </div>
                 </div>
                 <div className="text-gray-400">
-                  <p>
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry's
-                    standard dummy text ever since the 1500s, when an unknown
-                    printer took a galley of type and scrambled it to make a
-                    type specimen book. It has survived not only five centuries,
-                    but also the leap into electronic typesetting, remaining
-                    essentially unchanged. It was popularised in the 1960s with
-                    the release of Letraset sheets containing Lorem Ipsum
-                    passages, and more recently with desktop publishing software
-                    like Aldus PageMaker including versions of Lorem Ipsum.
-                  </p>
-                  <p>
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry's
-                    standard dummy text ever since the 1500s, when an unknown
-                    printer took a galley of type and scrambled it to make a
-                    type specimen book. It has survived not only five centuries,
-                    but also the leap into electronic typesetting, remaining
-                    essentially unchanged. It was popularised in the 1960s with
-                    the release of Letraset sheets containing Lorem Ipsum
-                    passages, and more recently with desktop publishing software
-                    like Aldus PageMaker including versions of Lorem Ipsum.
-                  </p>
-                  <p>
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry's
-                    standard dummy text ever since the 1500s, when an unknown
-                    printer took a galley of type and scrambled it to make a
-                    type specimen book. It has survived not only five centuries,
-                    but also the leap into electronic typesetting, remaining
-                    essentially unchanged. It was popularised in the 1960s with
-                    the release of Letraset sheets containing Lorem Ipsum
-                    passages, and more recently with desktop publishing software
-                    like Aldus PageMaker including versions of Lorem Ipsum.
-                  </p>
-                  <p>
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry's
-                    standard dummy text ever since the 1500s, when an unknown
-                    printer took a galley of type and scrambled it to make a
-                    type specimen book. It has survived not only five centuries,
-                    but also the leap into electronic typesetting, remaining
-                    essentially unchanged. It was popularised in the 1960s with
-                    the release of Letraset sheets containing Lorem Ipsum
-                    passages, and more recently with desktop publishing software
-                    like Aldus PageMaker including versions of Lorem Ipsum.
-                  </p>
-                  <p>
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry's
-                    standard dummy text ever since the 1500s, when an unknown
-                    printer took a galley of type and scrambled it to make a
-                    type specimen book. It has survived not only five centuries,
-                    but also the leap into electronic typesetting, remaining
-                    essentially unchanged. It was popularised in the 1960s with
-                    the release of Letraset sheets containing Lorem Ipsum
-                    passages, and more recently with desktop publishing software
-                    like Aldus PageMaker including versions of Lorem Ipsum.
-                  </p>
+                  {blogDetail?.long_description}
                 </div>
               </div>
             </div>

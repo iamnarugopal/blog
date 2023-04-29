@@ -4,6 +4,7 @@ const path = require("path");
 const cors = require("cors");
 const express = require("express");
 const userRoutes = require("./routes/userRoutes");
+const blogRoutes = require("./routes/blogRoutes");
 const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -14,12 +15,14 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use("/api", userRoutes);
+app.use("/api", blogRoutes);
 
 // Global error handling
 app.use((err, _req, res, next) => {

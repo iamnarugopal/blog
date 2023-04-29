@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
 @import "component";
+@tailwind utilities;
 
 html,
 body,
@@ -9,6 +9,27 @@ body,
   height: 100%;
 }
 
-body{
+body {
   @apply bg-slate-900;
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #000000 #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  @apply bg-slate-800;
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply bg-sky-600;
+  border-radius: 10px;
 }
