@@ -9,7 +9,7 @@ const BlogDetail = () => {
   const [blogDetail, setBlogDetail] = useState([]);
   const getBlogDetail = async () => {
     try {
-      const { data } = await Api(`/blog/${slug}`);
+      const { data } = await Api(`/blogdetailbyslug/${slug}`);
       if (data.status === 1) {
         setBlogDetail(data?.data);
       } else {
@@ -24,6 +24,7 @@ const BlogDetail = () => {
 
   useEffect(() => {
     getBlogDetail();
+    // eslint-disable-next-line
   }, []);
 
   return (
@@ -34,7 +35,7 @@ const BlogDetail = () => {
             <div className="">
               {!!blogDetail?.image && (
                 <div className="rounded-lg border border-slate-300 w-full mb-6">
-                  <img src={blogDetail?.image} alt="" className="rounded-lg" />
+                  <img src={blogDetail?.image} alt="" className="rounded-lg w-full" />
                 </div>
               )}
 
@@ -47,18 +48,22 @@ const BlogDetail = () => {
                     {blogDetail?.author?.name?.charAt(0).toUpperCase()}
                   </div>
                   <div className="text-sm leading-6">
-                    <p className="font-semibold text-slate-400">
+                    <div className="font-semibold text-slate-400">
                       <Link to="/">{blogDetail?.author?.name}</Link>
-                    </p>
-                    <p className="text-slate-600">
+                    </div>
+                    <div className="text-slate-600">
                       {dayjs(blogDetail?.createdAt).format(
-                        "DD MMM YYYY - HH:MM A"
+                        "DD MMM YYYY - hh:mm A"
                       )}
-                    </p>
+                    </div>
                   </div>
                 </div>
-                <div className="text-gray-400">
-                  {blogDetail?.long_description}
+                <div className="text-gray-400 blogdetail">
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: blogDetail?.long_description,
+                    }}
+                  />
                 </div>
               </div>
             </div>

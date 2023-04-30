@@ -4,16 +4,25 @@
     @apply scale-95 transition-all;
   }
   &.btn-primary {
-    @apply border-2 border-solid border-sky-600 bg-sky-600 text-white;
+    @apply border border-solid border-sky-600 bg-sky-600 text-white;
     &:hover {
       @apply bg-sky-700 border-sky-700  transition-all;
     }
   }
   &.btn-outline-primary {
-    @apply border-2 border-solid border-sky-600 text-sky-600;
+    @apply border border-solid border-sky-600 text-sky-600;
     &:hover {
       @apply bg-sky-600 text-white transition-all;
     }
+  }
+  &.btn-outline-danger {
+    @apply border border-solid border-red-600 text-red-600;
+    &:hover {
+      @apply bg-red-600 text-white transition-all;
+    }
+  }
+  &.btn-sm{
+    @apply px-3 py-2;
   }
 }
 .form-label {
@@ -33,3 +42,29 @@
 .form-error{
   @apply text-red-500 mt-1; 
 }
+
+
+@layer base {
+  h1 {
+    @apply text-4xl mb-3;
+  }
+  h2 {
+    @apply text-3xl mb-3;
+  }
+  h3 {
+    @apply text-2xl mb-3;
+  }
+  h4 {
+    @apply text-xl mb-3;
+  }
+  h5 {
+    @apply text-lg mb-3;
+  }
+  h6 {
+    @apply text-base mb-3;
+  }
+  p{
+    @apply leading-7 mb-3;
+  }
+}
+

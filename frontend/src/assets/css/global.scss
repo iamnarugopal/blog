@@ -33,3 +33,43 @@ body {
   @apply bg-sky-600;
   border-radius: 10px;
 }
+
+.ck-editor__editable {
+  min-height: 400px;
+}
+
+.ql-snow .ql-picker{
+  color: #fff;
+}
+
+.ql-toolbar .ql-stroke {
+  fill: none;
+  stroke: #fff;
+}
+
+.ql-toolbar .ql-fill {
+  fill: #fff;
+  stroke: none;
+}
+
+.ql-toolbar .ql-picker {
+  color: #fff;
+}
+.ql-snow .ql-fill, .ql-snow .ql-stroke.ql-fill {
+  fill: #fff;
+}
+
+.ql-editor{
+  min-height:400px;
+}
+
+.ql-snow .ql-picker-options{
+  background-color: #2a374c;
+}
+
+.blogdetail{
+  iframe{
+    width:100%;
+    height:300px
+  }
+}

@@ -1,9 +1,11 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { Link } from "react-router-dom";
-import { FiPower, FiKey, FiEdit2, FiEdit, FiList } from "react-icons/fi";
+import { FiPower, FiKey, FiEdit, FiList, FiLogIn, FiUserPlus } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
 import { removeUser } from "../../../store/authenticationSlice";
+import Logo from "../../../assets/images/logo.svg";
+
 
 const Header = () => {
   const disppatch = useDispatch();
@@ -24,7 +26,9 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <div className="">
             <div className="text-white text-3xl font-bold uppercase">
-              <Link to="/">My Blog</Link>
+              <Link to="/">
+                <img src={Logo} alt="Logo" style={{ height: 40 }} />
+              </Link>
             </div>
           </div>
           <div>
@@ -107,11 +111,13 @@ const Header = () => {
                 </Menu>
               ) : (
                 <>
-                  <Link className="btn btn-outline-primary" to="/login">
-                    Login
+                  <Link className="btn btn-outline-primary flex gap-2 items-center" to="/login">
+                    <FiLogIn className="text-xl inline-block" />
+                    <span className="hidden sm:inline-block">Login</span>
                   </Link>
-                  <Link className="btn btn-primary" to="/signup">
-                    Signup
+                  <Link className="btn btn-primary flex gap-2 items-center" to="/signup">
+                    <FiUserPlus className="text-xl inline-block" />
+                    <span className="hidden sm:inline-block">Signup</span>
                   </Link>
                 </>
               )}

@@ -1,3 +1,4 @@
+const fs = require("fs");
 const Blog = require("../models/blogmodel");
 
 const getSlug = (string) => {
@@ -26,7 +27,19 @@ module.exports.getblog = async (req, res) => {
   }
 };
 
-module.exports.getblogDetail = async (req, res) => {
+module.exports.myblog = async (req, res) => {
+  try {
+    const blog = await Blog.find(
+      { author: req.id },
+      { long_description: 0 }
+    ).populate("author", ["email", "name"]);
+    res.status(200).json({ data: blog, message: "Success", status: 1 });
+  } catch (e) {
+    res.status(500).json({ message: e.message, status: 0 });
+  }
+};
+
+module.exports.getblogDetailBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
     const blog = await Blog.findOne({ slug }).populate("author", [
@@ -45,9 +58,24 @@ module.exports.getblogDetail = async (req, res) => {
   }
 };
 
+module.exports.getblogDetailById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const blog = await Blog.findOne({ _id: id });
+    if (!blog) {
+      res
+        .status(404)
+        .json({ message: "No blog found with this id", status: 0 });
+      return;
+    }
+    res.status(200).json({ data: blog, message: "Success", status: 1 });
+  } catch (e) {
+    res.status(500).json({ message: e.message, status: 0 });
+  }
+};
+
 module.exports.addblog = async (req, res) => {
   try {
- 
     const { title, short_description, long_description } = req.body;
     const image = `${process.env.BLOG_IMAGE_URL}${req.file.filename}`;
     const author = req.id;
@@ -83,85 +111,101 @@ module.exports.addblog = async (req, res) => {
   }
 };
 
-// module.exports.login = async (req, res) => {
-//   try {
-//     const body = req.body;
-//     if (!body.email || !body.password) {
-//       res
-//         .status(200)
-//         .json({ message: "Please enter email & password", status: 0 });
-//       return;
-//     }
-//     const userExist = await User.findOne({ email: body.email });
-//     if (!userExist) {
-//       res.status(200).json({ message: "User not exist", status: 0 });
-//       return;
-//     }
-//     const comparePassword = await bcrypt.compare(
-//       body.password,
-//       userExist.password
-//     );
-//     if (!comparePassword) {
-//       res.status(200).json({ message: "Invalid login details", status: 0 });
-//       return;
-//     }
-//     const token = jwt.sign(
-//       { id: userExist._id.valueOf() },
-//       process.env.JWT_SECRET
-//     );
+module.exports.updateblog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, short_description, long_description } = req.body;
+    const image = !!req.file?.filename
+      ? `${process.env.BLOG_IMAGE_URL}${req.file.filename}`
+      : "";
+    const author = req.id;
+    const slug = getSlug(title);
+    const slugExist = await Blog.findOne({ slug, _id: { $ne: id } });
+    const blogExist = await Blog.findOne({ _id: id });
+    if (!!slugExist) {
+      res.status(409).json({ message: "Slug already exist", status: 0 });
+      return;
+    }
+    if (blogExist.author.valueOf() !== req.id) {
+      res.status(409).json({
+        message: "You are not authorized to edit this blog",
+        status: 0,
+      });
+      return;
+    }
+    const updateData = {
+      title,
+      slug,
+      short_description,
+      long_description,
+      author,
+      image,
+    };
+    Object.keys(updateData).map(
+      (key) => !updateData[key] && delete updateData[key]
+    );
 
-//     const sendData = {
-//       name: userExist.name,
-//       email: userExist.email,
-//     };
 
-//     res
-//       .status(200)
-//       .cookie("token", token, {
-//         domain: "localhost",
-//         path: "/",
-//         secure: true,
-//         maxAge: 600000,
-//         httpOnly: true,
-//         sameSite: "none",
-//       })
-//       .json({ data: sendData, message: "Login successfully", status: 1 });
-//   } catch (e) {
-//     res.status(500).json({ message: e.message, status: 0 });
-//   }
-// };
+    //delete image
+    if (!!blogExist?.image && req.file?.filename) {
+      let imagename = (blogExist?.image).split(process.env.BLOG_IMAGE_URL)[1];
+      fs.stat(`./images/blogs/${imagename}`, function (err, stats) {
+        //console.log(stats); //here we got all information of file in stats variable
 
-// module.exports.changepassword = async (req, res) => {
-//   try {
-//     const body = req.body;
+        if (err) {
+          return console.error(err);
+        }
 
-//     if (!body.current_password || !body.confirm_password) {
-//       res.status(200).json({
-//         message: "Please enter current & confirm password",
-//         status: 0,
-//       });
-//       return;
-//     }
-//     const userExist = await User.findOne({ _id: req.id });
-//     if (!userExist) {
-//       res.status(200).json({ message: "User not exist", status: 0 });
-//       return;
-//     }
-//     const comparePassword = await bcrypt.compare(
-//       body.current_password,
-//       userExist.password
-//     );
-//     if (!comparePassword) {
-//       res
-//         .status(200)
-//         .json({ message: "Current password not matching", status: 0 });
-//       return;
-//     }
-//     const hashPassword = await bcrypt.hash(body.confirm_password, 10);
-//     userExist.password = hashPassword;
-//     userExist.save();
-//     res.status(200).json({ message: "Password changed successfully", status: 1 });
-//   } catch (e) {
-//     res.status(500).json({ message: e.message, status: 0 });
-//   }
-// };
+        fs.unlink(`./images/blogs/${imagename}`, function (err) {
+          if (err) return console.log(err);
+        });
+      });
+    }
+
+    const result = await Blog.findByIdAndUpdate(
+      { _id: id },
+      {
+        ...updateData,
+      }
+    );
+
+    res.status(201).json({ message: "Blog updated successfully", status: 1 });
+  } catch (e) {
+    res.status(500).json({ message: e.message, status: 0 });
+  }
+};
+
+module.exports.deleteblog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const blogExist = await Blog.findOne({ _id: id });
+    if (blogExist.author.valueOf() !== req.id) {
+      res.status(409).json({
+        message: "You are not authorized to delete this blog",
+        status: 0,
+      });
+      return;
+    }
+    //delete image
+    if (!!blogExist?.image) {
+      let imagename = (blogExist?.image).split(process.env.BLOG_IMAGE_URL)[1];
+      fs.stat(`./images/blogs/${imagename}`, function (err, stats) {
+        //console.log(stats); //here we got all information of file in stats variable
+
+        if (err) {
+          return console.error(err);
+        }
+
+        fs.unlink(`./images/blogs/${imagename}`, function (err) {
+          if (err) return console.log(err);
+        });
+      });
+    }
+
+    const result = await Blog.findByIdAndDelete(id);
+    if (result)
+      res.status(200).json({ message: "Blog deleted successfully", status: 1 });
+  } catch (e) {
+    res.status(500).json({ message: e.message, status: 0 });
+  }
+};
