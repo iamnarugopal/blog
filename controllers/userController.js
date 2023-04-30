@@ -66,7 +66,7 @@ module.exports.login = async (req, res) => {
     res
       .status(200)
       .cookie("token", token, {
-        domain: process.env.NODE_ENV === "development" ? "localhost" : "https://narugopal-blog.vercel.app/",
+        domain: process.env.NODE_ENV === "development" ? "localhost" : "https://vercel.app",
         path: "/",
         secure: true,
         maxAge: 600000,
