@@ -145,7 +145,6 @@ module.exports.updateblog = async (req, res) => {
       (key) => !updateData[key] && delete updateData[key]
     );
 
-
     //delete image
     if (!!blogExist?.image && req.file?.filename) {
       let imagename = (blogExist?.image).split(process.env.BLOG_IMAGE_URL)[1];

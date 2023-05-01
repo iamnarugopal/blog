@@ -46,16 +46,18 @@ const AddBlog = () => {
 
   const onSubmit = async (body) => {
     try {
-      const imgSize = Math.ceil(body["image"][0]["size"] / 1024);
-      const imgType = body["image"][0]["type"].split("/")[1].toLowerCase();
+     
+      const imgSize = !!body["image"][0] ? Math.ceil(body["image"][0]["size"] / 1024) : null;
+      const imgType = !! body["image"][0] ? body["image"][0]["type"].split("/")[1].toLowerCase() : null;
       const allowedImage = ["jpg", "jpeg", "png"];
-      if (imgSize > 200) {
+
+      if (!!imgSize && imgSize > 200) {
         toast.error("Image size should be under 200kb", {
           position: toast.POSITION.BOTTOM_RIGHT,
         });
         return;
       }
-      if (!allowedImage.includes(imgType)) {
+      if (!!imgType && !allowedImage.includes(imgType)) {
         toast.error("Image extension should be jpg, jpeg or png", {
           position: toast.POSITION.BOTTOM_RIGHT,
         });

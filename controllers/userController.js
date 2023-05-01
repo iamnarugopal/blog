@@ -61,18 +61,11 @@ module.exports.login = async (req, res) => {
     const sendData = {
       name: userExist.name,
       email: userExist.email,
+      token,
     };
 
     res
       .status(200)
-      .cookie("token", token, {
-        domain: process.env.NODE_ENV === "development" ? "localhost" : "vercel.app",
-        path: "/",
-        secure: true,
-        maxAge: 600000,
-        httpOnly: true,
-        sameSite: "none",
-      })
       .json({ data: sendData, message: "Login successfully", status: 1 });
   } catch (e) {
     res.status(500).json({ message: e.message, status: 0 });
@@ -108,7 +101,9 @@ module.exports.changepassword = async (req, res) => {
     const hashPassword = await bcrypt.hash(body.confirm_password, 10);
     userExist.password = hashPassword;
     userExist.save();
-    res.status(200).json({ message: "Password changed successfully", status: 1 });
+    res
+      .status(200)
+      .json({ message: "Password changed successfully", status: 1 });
   } catch (e) {
     res.status(500).json({ message: e.message, status: 0 });
   }

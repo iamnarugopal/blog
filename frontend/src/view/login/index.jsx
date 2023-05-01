@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Api from "../../config/Api";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../store/authenticationSlice";
 
 const Login = () => {
   const dispatch = useDispatch();
+  const isLogin = useSelector((state) => state.authentication.isLogin);
   const {
     register,
     handleSubmit,
@@ -18,7 +19,6 @@ const Login = () => {
   const onSubmit = async (body) => {
     try {
       const { data } = await Api.post("login", body);
-      // console.log(data);
       if (data.status === 1) {
         toast.success("Login successfully", {
           position: toast.POSITION.BOTTOM_RIGHT,
@@ -36,6 +36,11 @@ const Login = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (isLogin) navigate("/");
+  }, [isLogin, navigate]);
+
   return (
     <section className="py-10 lg:py-20">
       <div className="container mx-auto">

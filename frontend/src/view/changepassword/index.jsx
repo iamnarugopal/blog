@@ -2,18 +2,13 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import Api from "../../config/Api";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setUser } from "../../store/authenticationSlice";
 
 const ChnagePassword = () => {
-  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const navigate = useNavigate();
 
   const onSubmit = async (body) => {
     try {

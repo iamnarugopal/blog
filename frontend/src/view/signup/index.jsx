@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Api from "../../config/Api";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 const Signup = () => {
   const {
     register,
@@ -11,7 +12,7 @@ const Signup = () => {
     reset,
   } = useForm();
   const navigate = useNavigate();
-
+  const isLogin = useSelector((state) => state.authentication.isLogin);
   const onSubmit = async (body) => {
     const { data } = await Api("register", "POST", body);
     if (data.status === 1) {
@@ -22,6 +23,11 @@ const Signup = () => {
       navigate("/login");
     }
   };
+
+  useEffect(() => {
+    if (isLogin) navigate("/");
+  }, [isLogin, navigate]);
+
   return (
     <section className="py-10 lg:py-20">
       <div className="container mx-auto">

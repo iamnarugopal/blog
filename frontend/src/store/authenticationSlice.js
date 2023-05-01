@@ -1,8 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
+
 const initialState = {
-  user: !!Cookies.get('user') ? JSON.parse(Cookies.get('user')) : {},
-  isLogin: !!Cookies.get('user') ? true : false,
+  token: !!localStorage.getItem("token") ? localStorage.getItem("token") : null,
+  user: !!localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null,
+  isLogin:
+    !!localStorage.getItem("token") && !!localStorage.getItem("user")
+      ? true
+      : false,
 };
 
 export const authenticationSlice = createSlice({
@@ -10,17 +14,20 @@ export const authenticationSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
-      // console.log(action.payload);
-      Cookies.set("user", JSON.stringify(action.payload), {
-        path: "/",
-        expires: (1 / 24 / 60) * 10,
-      });
-      state.user = action.payload;
+      const token = action.payload.token;
+      const userdata = { ...action.payload };
+      delete userdata.token;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(userdata));
+      state.token = token;
+      state.user = userdata;
       state.isLogin = true;
     },
     removeUser: (state) => {
-      Cookies.remove("user", { path: "/" });
-      state.user = {};
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      state.token = null;
+      state.user = null;
       state.isLogin = false;
     },
   },

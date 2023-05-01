@@ -1,8 +1,13 @@
 const jwt = require("jsonwebtoken");
 
 function verifyToken(req, res, next) {
-  //   const authHeader = req.headers.authorization;
-  const token = req.cookies.token;
+  let token = !!req.headers.authorization
+    ? req.headers.authorization
+    : null;
+  if (!!token) {
+    token = token.split('Bearer ')[1];
+  }
+  // const token = req.cookies.token;
   if (!token) {
     return res.status(401).json({ message: "Unauthorized Access", status: 0 });
   }
