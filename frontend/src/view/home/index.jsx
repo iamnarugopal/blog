@@ -45,17 +45,17 @@ const Home = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2  lg:grid-cols-3 2xl:grid-cols-4">
-              {blogs?.slice(0, 12)?.reverse().map((item, index) => {
+              {blogs?.reverse().map((item, index) => {
                 return <BlogCard key={index} data={item} />;
               })}
             </div>
-            <div className="text-center mt-10">
+            {/* <div className="text-center mt-10">
               <div>
                 <Link to="/blog" className="btn btn-outline-primary">
                   Show all blogs
                 </Link>
               </div>
-            </div>
+            </div> */}
           </>
         )}
       </div>
