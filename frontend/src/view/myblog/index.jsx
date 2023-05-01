@@ -4,7 +4,9 @@ import { toast } from "react-toastify";
 import Api from "../../config/Api";
 import Img from "../../assets/images/datanotfound.svg";
 import { Link } from "react-router-dom";
+import Loader from "../../component/widgets/Loader";
 const MyBlog = () => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const getBlogs = async () => {
     try {
@@ -12,6 +14,7 @@ const MyBlog = () => {
       // console.log(data);
       if (data.status === 1) {
         setBlogs(data?.data);
+        setIsLoaded(true);
       } else {
         toast.error(data.message, {
           position: toast.POSITION.BOTTOM_RIGHT,
@@ -31,6 +34,7 @@ const MyBlog = () => {
       try {
         const { data } = await Api.delete(`deleteblog/${d?._id}`);
         if (data.status === 1) {
+          setIsLoaded(false)
           getBlogs();
           toast.success(data.message, {
             position: toast.POSITION.BOTTOM_RIGHT,
@@ -52,29 +56,39 @@ const MyBlog = () => {
         <div className="text-center mb-10">
           <h1 className="text-white">My Blogs</h1>
         </div>
-        {!blogs?.length ? (
-          <div className="flex justify-center text-center">
-            <div className="sm:w-1/2 sm:w-1/3">
-              <img src={Img} alt="Not Found" className="w-full mb-10" />
-              <h5 className="text-white text-3xl mb-6">No blogs added yet</h5>
-              <div>
-                <Link to="/add-blog" className="btn btn-outline-primary">Add Blog</Link>
+        {isLoaded ? (
+          <>
+            {!blogs?.length ? (
+              <div className="flex justify-center text-center">
+                <div className="sm:w-1/2 sm:w-1/3">
+                  <img src={Img} alt="Not Found" className="w-full mb-10" />
+                  <h5 className="text-white text-3xl mb-6">
+                    No blogs added yet
+                  </h5>
+                  <div>
+                    <Link to="/add-blog" className="btn btn-outline-primary">
+                      Add Blog
+                    </Link>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2  lg:grid-cols-3 2xl:grid-cols-4">
+                {blogs?.reverse()?.map((item, index) => {
+                  return (
+                    <BlogCard
+                      key={index}
+                      data={item}
+                      isEdit={true}
+                      deleteBlog={deleteBlog}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </>
         ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2  lg:grid-cols-3 2xl:grid-cols-4">
-            {blogs?.reverse()?.map((item, index) => {
-              return (
-                <BlogCard
-                  key={index}
-                  data={item}
-                  isEdit={true}
-                  deleteBlog={deleteBlog}
-                />
-              );
-            })}
-          </div>
+          <Loader />
         )}
       </div>
     </section>

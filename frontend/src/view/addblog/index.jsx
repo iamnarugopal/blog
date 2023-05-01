@@ -19,8 +19,10 @@ const AddBlog = () => {
   const navigate = useNavigate();
   const { id, isEdit } = location.state || {};
   const [editData, setEditData] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const getBlogDetail = async () => {
     try {
+      setIsLoading(true);
       const { data } = await Api(`/blogdetailbyid/${id}`);
       if (data.status === 1) {
         setEditData(data.data);
@@ -29,10 +31,12 @@ const AddBlog = () => {
           short_description: data?.data?.short_description,
           long_description: data?.data?.long_description,
         });
+        setIsLoading(false);
       } else {
         toast.error(data.message, {
           position: toast.POSITION.BOTTOM_RIGHT,
         });
+        setIsLoading(false);
       }
     } catch (err) {
       console.log(err);
@@ -46,9 +50,12 @@ const AddBlog = () => {
 
   const onSubmit = async (body) => {
     try {
-     
-      const imgSize = !!body["image"][0] ? Math.ceil(body["image"][0]["size"] / 1024) : null;
-      const imgType = !! body["image"][0] ? body["image"][0]["type"].split("/")[1].toLowerCase() : null;
+      const imgSize = !!body["image"][0]
+        ? Math.ceil(body["image"][0]["size"] / 1024)
+        : null;
+      const imgType = !!body["image"][0]
+        ? body["image"][0]["type"].split("/")[1].toLowerCase()
+        : null;
       const allowedImage = ["jpg", "jpeg", "png"];
 
       if (!!imgSize && imgSize > 200) {
@@ -222,8 +229,9 @@ const AddBlog = () => {
                   <div className="text-center w-full">
                     <input
                       type="submit"
-                      value="Submit"
+                      value={isLoading ? "Loading..." : "Submit"}
                       className="btn btn-primary px-10"
+                      disabled={isLoading ? true : false}
                     />
                   </div>
                 </div>

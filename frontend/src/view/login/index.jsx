@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Api from "../../config/Api";
 import { toast } from "react-toastify";
@@ -15,9 +15,10 @@ const Login = () => {
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
-
+  const [isLoading, setIsLoading] = useState(false);
   const onSubmit = async (body) => {
     try {
+      setIsLoading(true);
       const { data } = await Api.post("login", body);
       if (data.status === 1) {
         toast.success("Login successfully", {
@@ -25,10 +26,12 @@ const Login = () => {
         });
         dispatch(setUser(data.data));
         navigate("/");
+        setIsLoading(false);
       } else {
         toast.error(data.message, {
           position: toast.POSITION.BOTTOM_RIGHT,
         });
+        setIsLoading(false);
       }
     } catch (err) {
       toast.error(err.message, {
@@ -81,8 +84,9 @@ const Login = () => {
                   <div>
                     <input
                       type="submit"
-                      value="Login"
+                      value={isLoading ? "Loading..." : "Login"}
                       className="btn btn-primary w-full"
+                      disabled={isLoading ? true : false}
                     />
                   </div>
                 </div>

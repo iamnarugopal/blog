@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import Api from "../../config/Api";
 import { toast } from "react-toastify";
@@ -9,9 +9,10 @@ const ChnagePassword = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-
+  const [isLoading, setIsLoading] = useState(false);
   const onSubmit = async (body) => {
     try {
+      setIsLoading(true);
       if (body.confirm_password !== body.new_password) {
         toast.error("New password & confirm password not matching", {
           position: toast.POSITION.BOTTOM_RIGHT,
@@ -25,10 +26,12 @@ const ChnagePassword = () => {
         toast.success("Password changed successfully", {
           position: toast.POSITION.BOTTOM_RIGHT,
         });
+        setIsLoading(false);
       } else {
         toast.error(data.message, {
           position: toast.POSITION.BOTTOM_RIGHT,
         });
+        setIsLoading(false);
       }
     } catch (err) {
       console.log(err);
@@ -92,8 +95,9 @@ const ChnagePassword = () => {
                   <div>
                     <input
                       type="submit"
-                      value="Submit"
+                      value={isLoading ? "Loading..." : "Submit"}
                       className="btn btn-primary w-full"
+                      disabled={isLoading ? true : false}
                     />
                   </div>
                 </div>
