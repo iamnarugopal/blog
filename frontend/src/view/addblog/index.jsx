@@ -22,7 +22,7 @@ const AddBlog = () => {
   const [isLoading, setIsLoading] = useState(false);
   const getBlogDetail = async () => {
     try {
-      setIsLoading(true);
+       setIsLoading(true);
       const { data } = await Api(`/blogdetailbyid/${id}`);
       if (data.status === 1) {
         setEditData(data.data);
@@ -44,12 +44,13 @@ const AddBlog = () => {
   };
 
   useEffect(() => {
-    getBlogDetail();
+    if (!!id) getBlogDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const onSubmit = async (body) => {
     try {
+      setIsLoading(true);
       const imgSize = !!body["image"][0]
         ? Math.ceil(body["image"][0]["size"] / 1024)
         : null;
@@ -84,10 +85,12 @@ const AddBlog = () => {
             position: toast.POSITION.BOTTOM_RIGHT,
           });
           navigate("/my-blog");
+          setIsLoading(false);
         } else {
           toast.error(data.message, {
             position: toast.POSITION.BOTTOM_RIGHT,
           });
+          setIsLoading(false);
         }
       } else {
         const { data } = await Api.post("addblog", formData);
@@ -97,10 +100,12 @@ const AddBlog = () => {
           });
           reset();
           navigate("/my-blog");
+          setIsLoading(false);
         } else {
           toast.error(data.message, {
             position: toast.POSITION.BOTTOM_RIGHT,
           });
+          setIsLoading(false);
         }
       }
     } catch (err) {
