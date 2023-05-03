@@ -1,4 +1,3 @@
-import { handleUpload } from "./cloudinary";
 const multer = require("multer");
 
 //Configuration for Multer
@@ -34,38 +33,28 @@ const multer = require("multer");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-const myUploadMiddleware = upload.single("image");
+const uploadImage = upload.single("image");
 
-function runMiddleware(req, res, fn) {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (result) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-      return resolve(result);
-    });
-  });
-}
 
-const handler = async (req, res) => {
-  const { method } = req;
-  if (method === "OPTIONS") {
-    return res.status(200).send("ok");
-  }
-  try {
-    await runMiddleware(req, res, myUploadMiddleware);
-    const b64 = Buffer.from(req.file.buffer).toString("base64");
-    let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
-    const cldRes = await handleUpload(dataURI);
-    res.json(cldRes);
-  } catch (error) {
-    console.log(error);
-    res.send({
-      message: error.message,
-    });
-  }
-};
-export default handler;
+// const handler = async (req, res) => {
+//   const { method } = req;
+//   if (method === "OPTIONS") {
+//     return res.status(200).send("ok");
+//   }
+//   try {
+//     await runMiddleware(req, res, uploadImage);
+//     const b64 = Buffer.from(req.file.buffer).toString("base64");
+//     let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+//     const cldRes = await handleUpload(dataURI);
+//     res.json(cldRes);
+//   } catch (error) {
+//     console.log(error);
+//     res.send({
+//       message: error.message,
+//     });
+//   }
+// };
+export default uploadImage;
 
 export const config = {
   api: {

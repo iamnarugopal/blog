@@ -1,3 +1,4 @@
+const handleUpload = require("../middleware/cloudinary");
 const fs = require("fs");
 const Blog = require("../models/blogmodel");
 
@@ -76,36 +77,41 @@ module.exports.getblogDetailById = async (req, res) => {
 
 module.exports.addblog = async (req, res) => {
   try {
-    const { title, short_description, long_description } = req.body;
-    const image = `${process.env.BLOG_IMAGE_URL}${req.file.filename}`;
-    const author = req.id;
-    if (title === "" || short_description === "" || long_description === "") {
-      res
-        .status(200)
-        .json({ message: "Please fill required fields", status: 0 });
-      return;
-    }
-    const slug = getSlug(title);
-    const slugExist = await Blog.findOne({ slug });
+    const b64 = Buffer.from(req.file.buffer).toString("base64");
+    let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+    const cldRes = await handleUpload(dataURI);
+    res.json(cldRes);
 
-    if (!!slugExist) {
-      res.status(409).json({ message: "Slug already exist", status: 0 });
-      return;
-    }
-    const result = new Blog({
-      title,
-      slug,
-      short_description,
-      long_description,
-      author,
-      image,
-    });
-    result
-      .save()
-      .then(() =>
-        res.status(201).json({ message: "Blog saved successfully", status: 1 })
-      )
-      .catch((e) => res.status(200).json({ message: e.message, status: 0 }));
+    // const { title, short_description, long_description } = req.body;
+    // const image = `${process.env.BLOG_IMAGE_URL}${req.file.filename}`;
+    // const author = req.id;
+    // if (title === "" || short_description === "" || long_description === "") {
+    //   res
+    //     .status(200)
+    //     .json({ message: "Please fill required fields", status: 0 });
+    //   return;
+    // }
+    // const slug = getSlug(title);
+    // const slugExist = await Blog.findOne({ slug });
+
+    // if (!!slugExist) {
+    //   res.status(409).json({ message: "Slug already exist", status: 0 });
+    //   return;
+    // }
+    // const result = new Blog({
+    //   title,
+    //   slug,
+    //   short_description,
+    //   long_description,
+    //   author,
+    //   image,
+    // });
+    // result
+    //   .save()
+    //   .then(() =>
+    //     res.status(201).json({ message: "Blog saved successfully", status: 1 })
+    //   )
+    //   .catch((e) => res.status(200).json({ message: e.message, status: 0 }));
   } catch (e) {
     res.status(500).json({ message: e.message, status: 0 });
   }
