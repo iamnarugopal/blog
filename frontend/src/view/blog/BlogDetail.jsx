@@ -34,7 +34,7 @@ const BlogDetail = () => {
     <section className="py-10 xl:py-16 2xl:py-20">
       <div className="container mx-auto">
         <div className="flex justify-center">
-          <div className="w-2/4">
+          <div className="lg:w-2/3 xl:w-2/4">
             {isLoaded ? (
               <div className="">
                 {!!blogDetail?.image && (
@@ -47,7 +47,7 @@ const BlogDetail = () => {
                   </div>
                 )}
 
-                <div className="mb-10">
+                <div className="">
                   <h1 className="text-3xl font-semibold text-white mb-4">
                     {blogDetail?.title}
                   </h1>
