@@ -26,6 +26,10 @@ const blogSchema = new Schema(
       type: String,
       required: false,
     },
+    public_id: {
+      type: String,
+      required: false,
+    },
     author: { type: Schema.Types.ObjectId, ref: "user" },
   },
   {

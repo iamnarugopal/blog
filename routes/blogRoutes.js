@@ -9,7 +9,7 @@ const {
   updateblog,
   deleteblog,
 } = require("../controllers/blogController");
-const uploadImage = require("../middleware/uploadImage");
+const { uploadImage } = require("../middleware/uploadImage");
 const router = Router();
 
 router.get("/blog", getblog);

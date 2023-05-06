@@ -1,6 +1,5 @@
-const handleUpload = require("../middleware/cloudinary");
-const fs = require("fs");
 const Blog = require("../models/blogmodel");
+const { cloudinary } = require("../middleware/uploadImage");
 
 const getSlug = (string) => {
   return string
@@ -77,41 +76,38 @@ module.exports.getblogDetailById = async (req, res) => {
 
 module.exports.addblog = async (req, res) => {
   try {
-    const b64 = Buffer.from(req.file.buffer).toString("base64");
-    let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
-    const cldRes = await handleUpload(dataURI);
-    res.json(cldRes);
-
-    // const { title, short_description, long_description } = req.body;
-    // const image = `${process.env.BLOG_IMAGE_URL}${req.file.filename}`;
-    // const author = req.id;
-    // if (title === "" || short_description === "" || long_description === "") {
-    //   res
-    //     .status(200)
-    //     .json({ message: "Please fill required fields", status: 0 });
-    //   return;
-    // }
-    // const slug = getSlug(title);
-    // const slugExist = await Blog.findOne({ slug });
-
-    // if (!!slugExist) {
-    //   res.status(409).json({ message: "Slug already exist", status: 0 });
-    //   return;
-    // }
-    // const result = new Blog({
-    //   title,
-    //   slug,
-    //   short_description,
-    //   long_description,
-    //   author,
-    //   image,
-    // });
-    // result
-    //   .save()
-    //   .then(() =>
-    //     res.status(201).json({ message: "Blog saved successfully", status: 1 })
-    //   )
-    //   .catch((e) => res.status(200).json({ message: e.message, status: 0 }));
+    // console.log(req.file);
+    const { title, short_description, long_description } = req.body;
+    const image = req.file.path;
+    const public_id = req.file.filename;
+    const author = req.id;
+    const slug = getSlug(title);
+    const slugExist = await Blog.findOne({ slug });
+    if (title === "" || short_description === "" || long_description === "") {
+      res
+        .status(200)
+        .json({ message: "Please fill required fields", status: 0 });
+      return;
+    }
+    if (!!slugExist) {
+      res.status(409).json({ message: "Slug already exist", status: 0 });
+      return;
+    }
+    const result = new Blog({
+      title,
+      slug,
+      short_description,
+      long_description,
+      author,
+      image,
+      public_id,
+    });
+    result
+      .save()
+      .then(() =>
+        res.status(201).json({ message: "Blog saved successfully", status: 1 })
+      )
+      .catch((e) => res.status(200).json({ message: e.message, status: 0 }));
   } catch (e) {
     res.status(500).json({ message: e.message, status: 0 });
   }
@@ -121,9 +117,8 @@ module.exports.updateblog = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, short_description, long_description } = req.body;
-    const image = !!req.file?.filename
-      ? `${process.env.BLOG_IMAGE_URL}${req.file.filename}`
-      : "";
+    const image = req.file.path;
+    const public_id = req.file.filename;
     const author = req.id;
     const slug = getSlug(title);
     const slugExist = await Blog.findOne({ slug, _id: { $ne: id } });
@@ -146,6 +141,7 @@ module.exports.updateblog = async (req, res) => {
       long_description,
       author,
       image,
+      public_id,
     };
     Object.keys(updateData).map(
       (key) => !updateData[key] && delete updateData[key]
@@ -153,17 +149,8 @@ module.exports.updateblog = async (req, res) => {
 
     //delete image
     if (!!blogExist?.image && req.file?.filename) {
-      let imagename = (blogExist?.image).split(process.env.BLOG_IMAGE_URL)[1];
-      fs.stat(`./images/blogs/${imagename}`, function (err, stats) {
-        //console.log(stats); //here we got all information of file in stats variable
-
-        if (err) {
-          return console.error(err);
-        }
-
-        fs.unlink(`./images/blogs/${imagename}`, function (err) {
-          if (err) return console.log(err);
-        });
+      await cloudinary.uploader.destroy(`${blogExist.public_id}`, {
+        resource_type: "image",
       });
     }
 
@@ -173,8 +160,9 @@ module.exports.updateblog = async (req, res) => {
         ...updateData,
       }
     );
-
-    res.status(201).json({ message: "Blog updated successfully", status: 1 });
+    if (!!result) {
+      res.status(201).json({ message: "Blog updated successfully", status: 1 });
+    }
   } catch (e) {
     res.status(500).json({ message: e.message, status: 0 });
   }
@@ -192,20 +180,10 @@ module.exports.deleteblog = async (req, res) => {
       return;
     }
     //delete image
-    if (!!blogExist?.image) {
-      let imagename = (blogExist?.image).split(process.env.BLOG_IMAGE_URL)[1];
-      fs.stat(`./images/blogs/${imagename}`, function (err, stats) {
-        //console.log(stats); //here we got all information of file in stats variable
-
-        if (err) {
-          return console.error(err);
-        }
-
-        fs.unlink(`./images/blogs/${imagename}`, function (err) {
-          if (err) return console.log(err);
-        });
-      });
-    }
+    // console.log(blogExist.public_id);
+    await cloudinary.uploader.destroy(`${blogExist.public_id}`, {
+      resource_type: "image",
+    });
 
     const result = await Blog.findByIdAndDelete(id);
     if (result)
