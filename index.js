@@ -9,9 +9,18 @@ const cookieParser = require("cookie-parser");
 const PORT = process.env.PORT || 5000;
 const app = express();
 
+//production
+// app.use(
+//   cors({
+//     origin: process.env.API_ORIGIN,
+//     credentials: true,
+//   })
+// );
+
+//development
 app.use(
   cors({
-    origin: process.env.API_ORIGIN,
+    origin: "*",
     credentials: true,
   })
 );
